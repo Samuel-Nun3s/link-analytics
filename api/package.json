@@ -1,0 +1,41 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "dotenv -e ../.env -- tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "prisma": "dotenv -e ../.env -- prisma",
+    "prisma:migrate": "dotenv -e ../.env -- prisma migrate dev",
+    "prisma:studio": "dotenv -e ../.env -- prisma studio",
+    "prisma:generate": "dotenv -e ../.env -- prisma generate"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "geoip-lite": "^2.0.2",
+    "ioredis": "^5.10.1",
+    "jsonwebtoken": "^9.0.3",
+    "nanoid": "^5.1.11",
+    "ua-parser-js": "^2.0.9",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/geoip-lite": "^1.4.4",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^25.9.1",
+    "dotenv-cli": "^11.0.0",
+    "prisma": "^6.19.3",
+    "tsx": "^4.22.3",
+    "typescript": "^6.0.3"
+  }
+}
