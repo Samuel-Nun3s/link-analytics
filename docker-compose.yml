@@ -31,6 +31,26 @@ services:
       timeout: 3s
       retries: 5
 
+  api:
+    build:
+      context: ./api
+    container_name: link-analytics-api
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      # Override de hostnames: dentro da rede do compose, postgres/redis são acessíveis pelo nome do serviço
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      REDIS_URL: redis://redis:6379
+      # Porta interna do container é fixa (mapeada pra ${PORT} do host)
+      PORT: 3000
+    ports:
+      - "${PORT}:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
 volumes:
   postgres-data:
   redis-data:
