@@ -1,0 +1,26 @@
+import type { Request, Response } from "express";
+import { resolveSlug } from "./redirect.service.js";
+
+export async function handleRedirect(
+  req: Request<{ slug: string }>,
+  res: Response,
+) {
+  const { slug } = req.params;
+  const result = await resolveSlug(slug);
+
+  switch (result.kind) {
+    case "redirect":
+      res.redirect(302, result.originalUrl);
+      return;
+    case "not-found":
+      res.status(404).send("Not Found");
+      return;
+    case "gone":
+      res.status(410).send(`Gone: ${result.reason}`);
+      return;
+    default: {
+      const _exhaustive: never = result;
+      throw new Error(`Unhandled kind: ${JSON.stringify(_exhaustive)}`);
+    }
+  }
+}
