@@ -16,6 +16,9 @@ const envSchema = z.object({
   // App
   BASE_URL: z.url(),
   PORT: z.coerce.number().int().positive().default(3000),
+  // 'loopback', 'linklocal', 'uniquelocal', IP/CIDR, 'true', 'false', ou número de hops.
+  // Combina vários com vírgula. Default cobre dev (localhost) e Docker bridge (172.x/192.168.x).
+  TRUST_PROXY: z.string().default('loopback, uniquelocal'),
 });
 
 const parsed = envSchema.safeParse(process.env);
