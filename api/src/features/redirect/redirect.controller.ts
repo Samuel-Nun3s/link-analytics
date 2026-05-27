@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import { resolveSlug } from "./redirect.service.js";
+import { enqueueClick } from "../clicks/clicks.service.js";
 
 export async function handleRedirect(
   req: Request<{ slug: string }>,
@@ -10,6 +11,12 @@ export async function handleRedirect(
 
   switch (result.kind) {
     case "redirect":
+      enqueueClick({
+        linkId: result.linkId,
+        ip: req.ip ?? "unknown",
+        userAgent: req.headers["user-agent"] ?? "unknown",
+        referrer: req.headers.referer ?? null,
+      });
       res.redirect(302, result.originalUrl);
       return;
     case "not-found":

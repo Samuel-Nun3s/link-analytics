@@ -2,6 +2,10 @@ import { app } from "./app.js";
 import { env } from "./config/env.js";
 import { prisma } from "./config/prisma.js";
 import { redis } from "./config/redis.js";
+import {
+  startClicksWorker,
+  stopClicksWorker,
+} from "./features/clicks/clicks.worker.js";
 
 async function bootstrap() {
   await prisma.$connect();
@@ -10,6 +14,8 @@ async function bootstrap() {
   await redis.ping();
   console.log("[redis] ready");
 
+  startClicksWorker();
+
   const server = app.listen(env.PORT, () => {
     console.log(`🚀 Server running on port ${env.PORT}`);
   });
@@ -17,6 +23,7 @@ async function bootstrap() {
   const shutdown = async (signal: string) => {
     console.log(`\n[shutdown] received ${signal}, closing...`);
     server.close();
+    await stopClicksWorker();
     await prisma.$disconnect();
     await redis.quit();
     console.log("[shutdown] done");

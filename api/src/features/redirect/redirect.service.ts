@@ -2,6 +2,7 @@ import { prisma } from "../../config/prisma.js";
 import { redis } from "../../config/redis.js";
 
 type CachedLink = {
+  id: string;
   originalUrl: string;
   expiresAt: string | null;
   maxClicks: number | null;
@@ -9,7 +10,7 @@ type CachedLink = {
 };
 
 export type RedirectResult =
-  | { kind: "redirect"; originalUrl: string }
+  | { kind: "redirect"; linkId: string; originalUrl: string }
   | { kind: "not-found" }
   | { kind: "gone"; reason: "expired" | "inactive" | "max-clicks" };
 
@@ -39,6 +40,7 @@ async function populateCache(slug: string): Promise<CachedLink | null> {
   const link = await prisma.link.findUnique({
     where: { slug },
     select: {
+      id: true,
       originalUrl: true,
       expiresAt: true,
       maxClicks: true,
@@ -48,6 +50,7 @@ async function populateCache(slug: string): Promise<CachedLink | null> {
   if (!link) return null;
 
   const payload: CachedLink = {
+    id: link.id,
     originalUrl: link.originalUrl,
     expiresAt: link.expiresAt?.toISOString() ?? null,
     maxClicks: link.maxClicks,
@@ -84,5 +87,5 @@ export async function resolveSlug(slug: string): Promise<RedirectResult> {
     return { kind: "gone", reason: "max-clicks" };
   }
 
-  return { kind: "redirect", originalUrl: cached.originalUrl };
+  return { kind: "redirect", linkId: cached.id, originalUrl: cached.originalUrl };
 }
