@@ -106,10 +106,30 @@ link-analytics/
 
 ---
 
+## Performance
+
+Benchmark do endpoint público `/:slug` com cache aquecido.
+
+| Cenário | p50 | p75 | p99 | Throughput |
+|---|---|---|---|---|
+| Cache hit (100 conexões concorrentes) | **47.60ms** | 49.13ms | 241ms¹ | 2012 req/s |
+| Cache miss (single user, 10 amostras) | ~3.5ms | — | — | — |
+
+Bench: `wrk -t4 -c100 -d30s --latency` rodando em localhost contra API single-threaded em Docker Compose.
+
+¹ A cauda p99 corresponde aos ticks de 5s do worker assíncrono que persiste cliques em lote (`prisma.click.createMany`). Trade-off conhecido — ver [docs/SCOPE.md](docs/SCOPE.md) para o roadmap pós-MVP de migração para Redis list + consumer.
+
+### Pipeline assíncrono — integridade
+- 60.417 requests no bench
+- 60.755 cliques registrados no banco (inclui warmups + testes anteriores)
+- **Zero perda** sob carga sustentada
+
+---
+
 ## Roadmap
 
-- [ ] Fase 1 — Setup (Express + Postgres + Prisma + Redis + Docker Compose)
-- [ ] Fase 2 — Endpoint público `/:slug` com cache Redis + click logging assíncrono
+- [x] Fase 1 — Setup (Express + Postgres + Prisma + Redis + Docker Compose)
+- [x] Fase 2 — Endpoint público `/:slug` com cache Redis + click logging assíncrono
 - [ ] Fase 3 — Auth admin (JWT) + CRUD de links
 - [ ] Fase 4 — Endpoints de analytics agregados
 - [ ] Fase 5 — Dashboard React + Recharts
