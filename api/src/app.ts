@@ -2,6 +2,7 @@ import express from "express";
 import { env } from "./config/env.js";
 import { authRoutes } from "./features/auth/auth.routes.js";
 import { healthRoutes } from "./features/health/health.routes.js";
+import { linksRoutes } from "./features/links/links.routes.js";
 import { redirectRoutes } from "./features/redirect/redirect.routes.js";
 import { errorHandler } from "./middleware/error-handler.js";
 
@@ -15,6 +16,7 @@ app.use(express.json());
 // Rotas específicas primeiro
 app.use(healthRoutes);
 app.use(authRoutes);
+app.use(linksRoutes);
 
 // Catch-all do redirect por último (matches GET /:slug)
 app.use(redirectRoutes);
