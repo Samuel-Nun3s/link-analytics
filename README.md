@@ -104,6 +104,62 @@ link-analytics/
 | `GET` | `/admin/analytics/overview` | Dashboard global agregado |
 | `GET` | `/admin/analytics/stream` | SSE com cliques em tempo real |
 
+### Formato de erro
+
+Todos os endpoints `/admin/*` retornam erros no formato:
+
+```json
+{ "error": { "message": "string", "code": "string?", "details": "any?" } }
+```
+
+Códigos atuais: `VALIDATION_ERROR` (400), `UNAUTHORIZED` (401), `NOT_FOUND` (404), `CONFLICT` (409), `INVALID_JSON` (400). O endpoint público `/:slug` devolve texto puro (404 / 410) já que o consumidor é navegador.
+
+---
+
+## Uso da API (curl)
+
+```bash
+# Login → token
+TOKEN=$(curl -s -X POST http://localhost:3000/admin/login \
+  -H "Content-Type: application/json" \
+  -d '{"password":"sua-senha-do-env"}' | jq -r .token)
+
+# Criar link com slug auto-gerado
+curl -X POST http://localhost:3000/admin/links \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"originalUrl":"https://anthropic.com"}'
+
+# Criar com slug custom, expiração e limite
+curl -X POST http://localhost:3000/admin/links \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "originalUrl":"https://anthropic.com",
+    "slug":"claude",
+    "expiresAt":"2027-01-01T00:00:00Z",
+    "maxClicks":100
+  }'
+
+# Listar com paginação
+curl "http://localhost:3000/admin/links?limit=20&offset=0" \
+  -H "Authorization: Bearer $TOKEN"
+
+# Buscar por id
+curl http://localhost:3000/admin/links/<id> \
+  -H "Authorization: Bearer $TOKEN"
+
+# Editar (PATCH parcial — só envia o que muda)
+curl -X PATCH http://localhost:3000/admin/links/<id> \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"originalUrl":"https://example.com"}'
+
+# Desativar (soft delete — active=false, click history preservada)
+curl -X DELETE http://localhost:3000/admin/links/<id> \
+  -H "Authorization: Bearer $TOKEN"
+```
+
 ---
 
 ## Performance
@@ -130,7 +186,7 @@ Bench: `wrk -t4 -c100 -d30s --latency` rodando em localhost contra API single-th
 
 - [x] Fase 1 — Setup (Express + Postgres + Prisma + Redis + Docker Compose)
 - [x] Fase 2 — Endpoint público `/:slug` com cache Redis + click logging assíncrono
-- [ ] Fase 3 — Auth admin (JWT) + CRUD de links
+- [x] Fase 3 — Auth admin (JWT) + CRUD de links
 - [ ] Fase 4 — Endpoints de analytics agregados
 - [ ] Fase 5 — Dashboard React + Recharts
 - [ ] Fase 6 — SSE de cliques em tempo real
