@@ -11,7 +11,11 @@
     "prisma:migrate": "dotenv -e ../.env -- prisma migrate dev",
     "prisma:studio": "dotenv -e ../.env -- prisma studio",
     "prisma:generate": "dotenv -e ../.env -- prisma generate",
-    "db:seed": "dotenv -e ../.env -- tsx prisma/seed.ts"
+    "db:seed": "dotenv -e ../.env -- tsx prisma/seed.ts",
+    "test": "dotenv -e ../.env -- vitest run",
+    "test:watch": "dotenv -e ../.env -- vitest",
+    "test:unit": "dotenv -e ../.env -- vitest run tests/unit",
+    "test:integration": "dotenv -e ../.env -- vitest run tests/integration"
   },
   "prisma": {
     "seed": "dotenv -e ../.env -- tsx prisma/seed.ts"
@@ -37,9 +41,12 @@
     "@types/geoip-lite": "^1.4.4",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.9.1",
+    "@types/supertest": "^7.2.0",
     "dotenv-cli": "^11.0.0",
     "prisma": "^6.19.3",
+    "supertest": "^7.2.2",
     "tsx": "^4.22.3",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.8"
   }
 }

@@ -22,7 +22,10 @@ const safeUrlSchema = z
   )
   .refine(
     (url) => {
-      const host = new URL(url).hostname.toLowerCase();
+      // hostname pode vir como "[::1]" (com colchetes) em alguns runtimes
+      const host = new URL(url)
+        .hostname.toLowerCase()
+        .replace(/^\[|\]$/g, "");
       // Loopback
       if (host === "localhost" || host === "127.0.0.1" || host === "::1") {
         return false;

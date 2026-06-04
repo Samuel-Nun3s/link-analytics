@@ -13,6 +13,7 @@ export async function handleRedirect(
     case "redirect":
       enqueueClick({
         linkId: result.linkId,
+        slug,
         ip: req.ip ?? "unknown",
         userAgent: req.headers["user-agent"] ?? "unknown",
         referrer: req.headers.referer ?? null,
